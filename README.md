@@ -5,11 +5,11 @@
 
 Dart library for converting numbers (integers, doubles, BigInt, Decimal, Numeric String) into their word representations (cardinal form) across a wide range of languages.
 
-**Currently supports up to 69 languages!**
+**Currently supports up to 70 languages!**
 
 ## Features
 
-- **Multi-Language Support:** Convert numbers to words in 69 languages (see list below).
+- **Multi-Language Support:** Convert numbers to words in 70 languages (see list below).
 - **Flexible Input:** Handles `int`, `double`, `BigInt`, `String` (if parsable), and `Decimal` types.
 - **Large Numbers:** Handles large integer parts up to **24 digits** (up to sextillions in the English short scale). Support may vary slightly by language implementation.
 - **Rich Formatting Options:**
@@ -52,12 +52,23 @@ print(num2text.convert(123));           // Output: one hundred twenty-three
 print(num2text.convert(1045.67));        // Output: one thousand forty-five point six seven
 print(num2text(1000000));               // Callable instance: one million
 
-// 3. Change language
+// 3. Change language using enum
 num2text.setLang(Lang.VI); // Switch to Vietnamese
 print(num2text.convert(987));           // Output: chín trăm tám mươi bảy
 
 num2text.setLang(Lang.ES); // Switch to Spanish
 print(num2text.convert(25));            // Output: veinticinco
+
+// 4. Change language using string code
+num2text.setLangByCode('fr'); // Switch to French
+print(num2text.convert(42));            // Output: quarante-deux
+
+// 5. Safely change language with fallback
+num2text.setLangByCodeSafe('xyz');      // Invalid code, falls back to English
+print(num2text.convert(42));            // Output: forty-two
+
+// 6. Get all available language codes
+print(LangExtension.availableCodes);    // ['en', 'et', 'vi', 'af', ...]
 ```
 
 ## Using Options
@@ -102,7 +113,7 @@ print(num2text(5, options: PlOptions(currency: true)));
 
 ## Supported Languages
 
-The library currently supports the following 69 languages. Each language has specific options available (e.g., `EnOptions`, `ViOptions`) and is tested individually. For complete usage examples of a specific language, including all options, please check the corresponding test file listed in the table.
+The library currently supports the following 70 languages. Each language has specific options available (e.g., `EnOptions`, `ViOptions`) and is tested individually. For complete usage examples of a specific language, including all options, please check the corresponding test file listed in the table.
 
 | Language        | Enum Value (`Lang.XX`) | Test File Location             |
 | :-------------- | :--------------------- | :----------------------------- |
@@ -120,6 +131,7 @@ The library currently supports the following 69 languages. Each language has spe
 | Greek           | `Lang.EL`              | `test/lang/lang_el_test.dart`  |
 | English         | `Lang.EN`              | `test/lang/lang_en_test.dart`  |
 | Spanish         | `Lang.ES`              | `test/lang/lang_es_test.dart`  |
+| Estonian        | `Lang.ET`              | `test/lang/lang_et_test.dart`  |
 | Persian (Farsi) | `Lang.FA`              | `test/lang/lang_fa_test.dart`  |
 | Finnish         | `Lang.FI`              | `test/lang/lang_fi_test.dart`  |
 | Filipino        | `Lang.FIL`             | `test/lang/lang_fil_test.dart` |

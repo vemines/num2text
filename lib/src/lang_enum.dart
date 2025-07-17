@@ -11,6 +11,9 @@ enum Lang {
   /// English (e.g., USD, GBP, AUD, CAD, EUR, INR)
   EN,
 
+  /// Estonian (e.g., EUR)
+  ET,
+
   /// Vietnamese (e.g., VND)
   VI,
 
@@ -213,8 +216,44 @@ enum Lang {
   ZH,
 
   /// Zulu (e.g., ZAR)
-  ZU,
-}
+  ZU;
 
-// Removed the unused `final Lang l = Lang.EN;` variable.
-// If it was for internal testing, keep it within a test file or mark it clearly.
+  /// The string representation of this language (lowercase ISO 639-1 code)
+  String get code => name.toLowerCase();
+
+  /// Returns a string representation of this language
+  String toCode() => name.toLowerCase();
+
+  /// Converts a string language code to its corresponding [Lang] enum value
+  ///
+  /// The language code should be in ISO 639-1 format (e.g., 'en', 'fr', 'es')
+  /// Case-insensitive matching is applied.
+  ///
+  /// Returns the corresponding [Lang] enum value, or null if the language code is not supported
+  static Lang? fromCode(String languageCode) {
+    try {
+      return Lang.values.firstWhere(
+        (language) => language.name.toLowerCase() == languageCode.toLowerCase(),
+      );
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// Converts a string language code to its corresponding [Lang] enum value
+  ///
+  /// The language code should be in ISO 639-1 format (e.g., 'en', 'fr', 'es')
+  /// Case-insensitive matching is applied.
+  ///
+  /// Returns the corresponding [Lang] enum value, or the [defaultLang] if the language code is not supported
+  static Lang fromCodeOrDefault(
+    String languageCode, {
+    Lang defaultLang = Lang.EN,
+  }) {
+    return fromCode(languageCode) ?? defaultLang;
+  }
+
+  /// Returns all available language codes as a list of strings
+  static List<String> get availableCodes =>
+      Lang.values.map((lang) => lang.name.toLowerCase()).toList();
+}

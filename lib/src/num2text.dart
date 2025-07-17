@@ -49,10 +49,18 @@ import 'options/base_options.dart';
 /// print(num2text(15, options: EsOptions(currency: true, currencyInfo: CurrencyInfo.eurEs))); // Output: quince euros
 /// print(num2text(1001.5, options: EsOptions(currency: true, currencyInfo: CurrencyInfo.eurEs))); // Output: mil un euros con cincuenta céntimos
 ///
-/// // 8. Using the callable instance syntax
+/// // 8. Change language using string code
+/// num2text.setLangByCode('fr'); // Switch to French
+/// print(num2text(42)); // Output: quarante-deux
+///
+/// // 9. Safely change language with fallback
+/// num2text.setLangByCodeSafe('xyz'); // Invalid code, falls back to English
+/// print(num2text(42)); // Output: forty-two
+///
+/// // 10. Using the callable instance syntax
 /// print(num2text(1_000_000)); // Output: un millón
 ///
-/// // 9. Switch back to English and use GBP currency
+/// // 11. Switch back to English and use GBP currency
 /// num2text.setLang(Lang.EN);
 /// // Use includeAnd: true for typical British English currency phrasing
 /// print(num2text(135.75, options: EnOptions(currency: true, currencyInfo: CurrencyInfo.gbp, includeAnd: true)));
@@ -108,6 +116,7 @@ class Num2Text {
     _converters[Lang.EL] = Num2TextEL();
     _converters[Lang.EN] = Num2TextEN();
     _converters[Lang.ES] = Num2TextES();
+    _converters[Lang.ET] = Num2TextET();
     _converters[Lang.FA] = Num2TextFA();
     _converters[Lang.FI] = Num2TextFI();
     _converters[Lang.FIL] = Num2TextFIL();
@@ -176,6 +185,53 @@ class Num2Text {
     _currentLang = newLang;
   }
 
+  /// Changes the active language for subsequent calls using a language code string.
+  ///
+  /// The [langCode] should be a two-letter ISO 639-1 language code (e.g., 'en', 'fr', 'es').
+  /// Case-insensitive.
+  ///
+  /// If the [langCode] is not supported, it will either:
+  /// - Throw [ArgumentError] if [fallbackToDefault] is false
+  /// - Use the fallback language (default: English) if [fallbackToDefault] is true
+  ///
+  /// Example:
+  /// ```dart
+  /// num2text.setLangByCode('fr'); // Switch to French
+  /// num2text.setLangByCode('es'); // Switch to Spanish
+  /// ```
+  void setLangByCode(
+    String langCode, {
+    bool fallbackToDefault = false,
+    Lang defaultLang = Lang.EN,
+  }) {
+    final lang = Lang.fromCode(langCode);
+    if (lang == null) {
+      if (fallbackToDefault) {
+        setLang(defaultLang);
+      } else {
+        throw ArgumentError(
+          'Language code "$langCode" is not supported. Available codes: ${Lang.availableCodes.join(', ')}',
+        );
+      }
+    } else {
+      setLang(lang);
+    }
+  }
+
+  /// Changes the active language for subsequent calls using a language code string.
+  ///
+  /// Similar to [setLangByCode], but always falls back to the default language
+  /// (English unless specified) if the provided language code is not supported.
+  ///
+  /// Example:
+  /// ```dart
+  /// num2text.setLangByCodeSafe('xyz'); // Invalid code, falls back to English
+  /// num2text.setLangByCodeSafe('invalid', defaultLang: Lang.FR); // Falls back to French
+  /// ```
+  void setLangByCodeSafe(String langCode, {Lang defaultLang = Lang.EN}) {
+    setLangByCode(langCode, fallbackToDefault: true, defaultLang: defaultLang);
+  }
+
   /// Gets the currently active language ([Lang]) for conversions.
   Lang get currentLang => _currentLang;
 
@@ -188,7 +244,8 @@ class Num2Text {
     if (converter == null) {
       // This state should be unreachable if constructor/setLang checks pass.
       throw StateError(
-          'Internal error: No converter found for language $_currentLang.');
+        'Internal error: No converter found for language $_currentLang.',
+      );
     }
     return converter;
   }

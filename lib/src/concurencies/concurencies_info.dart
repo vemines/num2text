@@ -737,4 +737,13 @@ class CurrencyInfo {
     subUnitPlural: "iisenti", // 0, 2+ cents (class 8 or 10, depends on context)
     separator: "ne", // "ne" (and/with)
   );
+
+  /// Euro (EUR) currency details for Estonian (`Lang.ET`).
+  static const CurrencyInfo eurEt = CurrencyInfo(
+    mainUnitSingular: "euro", // 1 euro (singular/plural same)
+    mainUnitPlural: "eurot", // 0, 2+ eurot (partitive case)
+    subUnitSingular: "sent", // 1 sent
+    subUnitPlural: "senti", // 0, 2+ senti (partitive case)
+    separator: "ja", // "ja" (and)
+  );
 }

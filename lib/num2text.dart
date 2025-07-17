@@ -28,6 +28,7 @@ export 'src/options/de_options.dart' show DeOptions;
 export 'src/options/el_options.dart' show ElOptions;
 export 'src/options/en_options.dart' show EnOptions;
 export 'src/options/es_options.dart' show EsOptions;
+export 'src/options/et_options.dart' show EtOptions;
 export 'src/options/fa_options.dart' show FaOptions;
 export 'src/options/fi_options.dart' show FiOptions;
 export 'src/options/fil_options.dart' show FilOptions;

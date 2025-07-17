@@ -12,6 +12,7 @@ export 'lang_de.dart';
 export 'lang_el.dart';
 export 'lang_en.dart';
 export 'lang_es.dart';
+export 'lang_et.dart';
 export 'lang_fa.dart';
 export 'lang_fi.dart';
 export 'lang_fil.dart';
