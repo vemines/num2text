@@ -71,7 +71,10 @@ void main() {
           equals("quarante-cinq mille six cent vingt-trois"));
       expect(converter.convert(87654),
           equals("quatre-vingt-sept mille six cent cinquante-quatre"));
+      expect(converter.convert(80000), equals("quatre-vingt mille"));
       expect(converter.convert(100000), equals("cent mille"));
+      expect(converter.convert(180000), equals("cent quatre-vingt mille"));
+      expect(converter.convert(200000), equals("deux cent mille"));
       expect(converter.convert(123456),
           equals("cent vingt-trois mille quatre cent cinquante-six"));
       expect(
@@ -204,6 +207,30 @@ void main() {
       expect(
           converter.convert(10000000, options: const FrOptions(currency: true)),
           equals("dix millions d'euros"));
+      expect(
+          converter.convert(1000000, options: const FrOptions(currency: true)),
+          equals("un million d'euros"));
+      expect(
+          converter.convert(1500000, options: const FrOptions(currency: true)),
+          equals("un million cinq cent mille euros"));
+      expect(
+          converter.convert(2000003, options: const FrOptions(currency: true)),
+          equals("deux millions trois euros"));
+      const xof = CurrencyInfo(
+        mainUnitSingular: "franc CFA",
+        mainUnitPlural: "francs CFA",
+        subUnitSingular: "centime",
+        subUnitPlural: "centimes",
+        separator: "et",
+      );
+      expect(
+          converter.convert(1000000,
+              options: const FrOptions(currency: true, currencyInfo: xof)),
+          equals("un million de francs CFA"));
+      expect(
+          converter.convert(3000000000,
+              options: const FrOptions(currency: true, currencyInfo: xof)),
+          equals("trois milliards de francs CFA"));
       expect(converter.convert(0.01, options: const FrOptions(currency: true)),
           equals("un centime"));
       expect(converter.convert(0.5, options: const FrOptions(currency: true)),
@@ -250,6 +277,11 @@ void main() {
           equals("un milliard un million"));
       expect(converter.convert(BigInt.parse('2001000')),
           equals("deux millions mille"));
+      expect(
+          converter.convert(1080000), equals("un million quatre-vingt mille"));
+      expect(converter.convert(1200000), equals("un million deux cent mille"));
+      expect(converter.convert(80000000), equals("quatre-vingts millions"));
+      expect(converter.convert(200000001), equals("deux cents millions un"));
       expect(
           converter.convert(BigInt.parse('1000987600003')),
           equals(
