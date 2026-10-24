@@ -152,13 +152,14 @@ class Num2TextFR implements Num2TextBase {
           ? info.mainUnitSingular
           : (info.mainUnitPlural ?? info.mainUnitSingular);
       String joiner = " ";
-      // Elision check (e.g., "millions d'euros")
-      final bool endsPlural =
-          _scaleWordsByExponent.values.any((p) => mainText.endsWith(p[1]));
+      // "de" after a scale noun, elided before a vowel
+      // (e.g., "un million de francs", "deux millions d'euros")
+      final bool endsWithScale = _scaleWordsByExponent.values
+          .any((p) => mainText.endsWith(p[0]) || mainText.endsWith(p[1]));
       final bool startsVowel = mainName.isNotEmpty &&
           ['a', 'e', 'i', 'o', 'u', 'y', 'h', 'A', 'E', 'I', 'O', 'U', 'Y', 'H']
               .contains(mainName[0]);
-      if (endsPlural && startsVowel) joiner = " d'";
+      if (endsWithScale) joiner = startsVowel ? " d'" : " de ";
       mainPart = '$mainText$joiner$mainName';
     }
 
@@ -241,14 +242,15 @@ class Num2TextFR implements Num2TextBase {
     BigInt remaining = n;
     final BigInt thousand = BigInt.from(1000);
     int groupIndex = 0;
-    bool isLowestNonZeroGroup = true; // Track rightmost non-zero chunk
 
     while (remaining > BigInt.zero) {
       int chunkValue = (remaining % thousand).toInt();
       remaining ~/= thousand;
 
       if (chunkValue > 0) {
-        bool isTerminalChunkForChunk = isLowestNonZeroGroup;
+        // "mille" is an adjective and blocks the plural 's'; scale nouns
+        // ("million", "milliard"...) do not ("deux cent mille", "deux cents millions")
+        bool isTerminalChunkForChunk = groupIndex != 1;
         String chunkText =
             _convertChunk(chunkValue, isTerminalChunk: isTerminalChunkForChunk);
         String? scaleWord;
@@ -275,7 +277,6 @@ class Num2TextFR implements Num2TextBase {
           currentPart += (chunkText.isNotEmpty ? " " : "") + scaleWord;
         }
         parts.insert(0, currentPart.trim());
-        isLowestNonZeroGroup = false; // Next non-zero chunk is not terminal
       }
       groupIndex++;
     }
@@ -284,7 +285,8 @@ class Num2TextFR implements Num2TextBase {
 
   /// Converts a number 0-999 into French words.
   /// Handles 70-79, 90-99, hyphens, "et un", plural 's' on "cent"/"vingt".
-  /// [isTerminalChunk]: True if this is the rightmost non-zero chunk of the entire number.
+  /// [isTerminalChunk]: True if the chunk is not followed by another numeral
+  /// (units group, or group before a scale noun such as "million").
   String _convertChunk(int n, {required bool isTerminalChunk}) {
     if (n == 0) return "";
     if (n < 0 || n >= 1000) throw ArgumentError("Chunk must be 0-999: $n");
